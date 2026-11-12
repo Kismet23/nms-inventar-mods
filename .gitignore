@@ -1,0 +1,14 @@
+# Python-Umgebung und Caches
+.venv/
+__pycache__/
+*.pyc
+
+# Von den Mods zur Laufzeit erzeugt (enthalten Spieldaten bzw. Spielgrafiken von Hello Games,
+# deshalb nicht im Repo; die Mods legen sie beim ersten Start selbst an)
+icons_cache/
+daten/
+logs/
+
+# Persoenliches
+backup/
+*.log
