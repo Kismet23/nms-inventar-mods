@@ -5,7 +5,7 @@ Sie basieren auf [NMS.py](https://github.com/monkeyman192/NMS.py) und [pyMHF](ht
 
 | Mod | Datei | Was sie macht |
 |---|---|---|
-| **Inventarsuche** (v0.27.3) | `mods/inventarsuche.py` | Live-Suche über alle Inventare (Exoanzug, Schiffe, Frachter, Lager, Fahrzeuge) in einem Fenster neben dem Spiel, optional Hervorhebung der Treffer im Inventar-Bildschirm, Bauplan-Baum mit Einkaufsliste. Liest Inventare nur, verändert sie nie. |
+| **Inventarsuche** (v0.27.4) | `mods/inventarsuche.py` | Live-Suche über alle Inventare (Exoanzug, Schiffe, Frachter, Lager, Fahrzeuge) in einem Fenster neben dem Spiel, optional Hervorhebung der Treffer im Inventar-Bildschirm, Bauplan-Baum mit Einkaufsliste. Liest Inventare nur, verändert sie nie. |
 | **Lager-Werkzeuge** (v1.5) | `mods/lager_werkzeuge.py` | Im Lager-Bildschirm alle zehn Lagercontainer umschalten, sortieren, Stapel zusammenlegen, schnell einlagern, Packlisten und Auffüllen. **Verschiebt Items** über die Spielfunktionen und zählt danach die Gesamtmengen nach. |
 
 > **Achtung:** Mods, die in den Spielspeicher eingreifen, laufen auf eigenes Risiko. Vor dem ersten Test eine
