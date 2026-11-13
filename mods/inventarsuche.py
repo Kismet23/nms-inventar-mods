@@ -847,7 +847,7 @@ class MainPanel(CustomWidget):
 class Inventarsuche(Mod):
     __author__ = "Kismet23 + Claude"
     __description__ = "Live-Suche ueber alle Inventare, optional Hervorhebung im Inventar-Bildschirm"
-    __version__ = "0.27.4"
+    __version__ = "0.27.5"
 
     def __init__(self):
         super().__init__()
@@ -912,6 +912,7 @@ class Inventarsuche(Mod):
         self._hazard_pending = None
         self._hazard_warn = ""
         self._hazard_blocked: set = set()  # Module, deren geschriebener Wert nicht hielt
+        self._hazard_template: dict[str, str] = {}  # Upgrade-ID -> Basis-Technik (z. B. UP_HOT3 -> T_HOTPROT)
         self._hazard_dumped = False
         self._hazard_changes_logged = 0
         self._hazard_none_logged_at = -1e9
@@ -1297,10 +1298,27 @@ class Inventarsuche(Mod):
                 if vals and 0.0 < mult < 100.0:
                     cfg[tid] = (vals, mult)
             from_tables = bool(cfg)
+            # v0.27.5: Die eingebauten Schutz-Module sind prozedurale Upgrades (z. B. UP_HOT3#47843). Sie stehen
+            # in mpProceduralTechTable; ihr Feld Template nennt die Basis-Technik (UP_HOT3 -> T_HOTPROT), deren
+            # Ladestoffe gelten.
+            ptr = rm.mpProceduralTechTable
+            if ptr and cfg:
+                for entry in ptr.contents.Table:
+                    pid = _clean_id(str(entry.ID))
+                    tpl = _clean_id(str(entry.Template))
+                    if pid and tpl in cfg and pid not in cfg:
+                        cfg[pid] = cfg[tpl]
+                        self._hazard_template[pid] = tpl
         except Exception:
             pass
         for tid, fb in self.HAZARD_FALLBACK.items():
             cfg.setdefault(tid, (dict(fb[0]), fb[1]))
+        # Ersatz, falls die Tabelle der prozeduralen Upgrades nicht lesbar ist (Stand Spieldaten 2026-11)
+        for prefix, tpl in self.HAZARD_UPGRADES.items():
+            for lvl in (1, 2, 3):
+                if f"{prefix}{lvl}" not in cfg:
+                    cfg[f"{prefix}{lvl}"] = cfg[tpl]
+                    self._hazard_template[f"{prefix}{lvl}"] = tpl
         if not from_tables:
             # v0.27.3: Tabellen noch nicht da (Hauptmenue) -> Standardwerte nur vorlaeufig, spaeter erneut lesen
             return cfg
@@ -1312,7 +1330,11 @@ class Inventarsuche(Mod):
         return cfg
 
     # Anzeigename eines Moduls fuer Statuszeile/Log (bekannte Kurzname, sonst Spielname).
+    # Prozedurale Schutz-Upgrades -> Basis-Technik (aus der Upgrade-Tabelle, Feld Template)
+    HAZARD_UPGRADES = {"UP_HOT": "T_HOTPROT", "UP_COLD": "T_COLDPROT", "UP_TOX": "T_TOX", "UP_RAD": "T_RAD"}
+
     def _hazard_short(self, tid: str) -> str:
+        tid = self._hazard_template.get(tid, tid)
         return self.HAZARD_TECHS.get(tid) or self._display_name(tid)
 
     @staticmethod
